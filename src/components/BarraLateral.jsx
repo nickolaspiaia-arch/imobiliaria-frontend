@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Users, MapPin, Tags, Home, Image, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Users, MapPin, Tags, Home, Image, ChevronRight, ChevronLeft, LayoutDashboard } from 'lucide-react';
 
 function BarraLateral() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   
   const menuItems = [
+    { id: 'home', path: '/home', label: 'Início', icon: <LayoutDashboard size={20} /> },
     { id: 'imoveis', path: '/imoveis', label: 'Imóveis', icon: <Home size={20} /> },
     { id: 'usuarios', path: '/usuarios', label: 'Usuários', icon: <Users size={20} /> },
     { id: 'bairros', path: '/bairros', label: 'Bairros', icon: <MapPin size={20} /> },

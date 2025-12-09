@@ -20,6 +20,11 @@ function PaginaFotos() {
   const [loading, setLoading] = useState(true);
   const { toasts, showToast, removeToast } = useToast();
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const canEdit = user.role === 'admin' || user.role === 'corretor';
+  const canDelete = user.role === 'admin';
+  const canCreate = user.role === 'admin' || user.role === 'corretor';
+
   useEffect(() => {
     carregarDados();
   }, []);
@@ -126,13 +131,13 @@ function PaginaFotos() {
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="page-container">
       <div className="page-header">
-        <h1 className="page-title">Galeria de Fotos</h1>
-        {modo === 'lista' && (
+        <h1 className="page-title">Fotos dos Imóveis</h1>
+        {modo === 'lista' && canCreate && (
           <button 
             onClick={() => setModo('formulario')}
             className="btn btn-primary"
           >
-            + Adicionar Foto
+            + Nova Foto
           </button>
         )}
         {modo === 'formulario' && (
@@ -170,24 +175,30 @@ function PaginaFotos() {
                       Capa
                     </span>
                   )}
-                  <div className="card-actions-overlay">
-                    <button 
-                      onClick={() => editarFoto(foto)}
-                      className="btn-icon"
-                      title="Editar"
-                      style={{ color: 'white' }}
-                    >
-                      <Pencil size={24} />
-                    </button>
-                    <button 
-                      onClick={() => deletarFoto(foto.id)}
-                      className="btn-icon delete"
-                      title="Excluir"
-                      style={{ color: 'white' }}
-                    >
-                      <Trash2 size={24} />
-                    </button>
-                  </div>
+                  {(canEdit || canDelete) && (
+                    <div className="card-actions-overlay">
+                      {canEdit && (
+                        <button 
+                          onClick={() => editarFoto(foto)}
+                          className="btn-icon"
+                          title="Editar"
+                          style={{ color: 'white' }}
+                        >
+                          <Pencil size={24} />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button 
+                          onClick={() => deletarFoto(foto.id)}
+                          className="btn-icon delete"
+                          title="Excluir"
+                          style={{ color: 'white' }}
+                        >
+                          <Trash2 size={24} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

@@ -14,6 +14,11 @@ function PaginaImoveis() {
   const [fotos, setFotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toasts, showToast, removeToast } = useToast();
+  
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const canEdit = user.role === 'admin' || user.role === 'corretor';
+  const canDelete = user.role === 'admin';
+  const canCreate = user.role === 'admin' || user.role === 'corretor';
 
   const [formulario, setFormulario] = useState({
     titulo: '',
@@ -162,7 +167,7 @@ function PaginaImoveis() {
       <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Imóveis</h1>
-        {modo === 'lista' && (
+        {modo === 'lista' && canCreate && (
           <button 
             onClick={() => setModo('formulario')}
             className="btn btn-primary"
@@ -205,22 +210,28 @@ function PaginaImoveis() {
                     {imovel.finalidade}
                   </div>
 
-                  <div className="property-actions">
-                    <button 
-                      onClick={() => editarImovel(imovel)} 
-                      className="property-action-btn" 
-                      title="Editar"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button 
-                      onClick={() => deletarImovel(imovel.id)} 
-                      className="property-action-btn delete" 
-                      title="Excluir"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                  {(canEdit || canDelete) && (
+                    <div className="property-actions">
+                      {canEdit && (
+                        <button 
+                          onClick={() => editarImovel(imovel)} 
+                          className="property-action-btn" 
+                          title="Editar"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button 
+                          onClick={() => deletarImovel(imovel.id)} 
+                          className="property-action-btn delete" 
+                          title="Excluir"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="property-content">

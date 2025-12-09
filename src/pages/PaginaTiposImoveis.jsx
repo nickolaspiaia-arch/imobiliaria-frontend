@@ -12,6 +12,11 @@ function PaginaTiposImoveis() {
   const [loading, setLoading] = useState(true);
   const { toasts, showToast, removeToast } = useToast();
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const canEdit = user.role === 'admin' || user.role === 'corretor';
+  const canDelete = user.role === 'admin';
+  const canCreate = user.role === 'admin' || user.role === 'corretor';
+
   useEffect(() => {
     carregarTipos();
   }, []);
@@ -78,7 +83,7 @@ function PaginaTiposImoveis() {
       <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Tipos de Imóvel</h1>
-        {modo === 'lista' && (
+        {modo === 'lista' && canCreate && (
           <button 
             onClick={() => setModo('formulario')}
             className="btn btn-primary"
@@ -107,18 +112,24 @@ function PaginaTiposImoveis() {
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--primary)' }}>{tipo.nome}</h3>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>{tipo.descricao}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button onClick={() => editarTipo(tipo)} className="btn-icon" title="Editar">
-                    <Pencil size={18} />
-                  </button>
-                  <button 
-                    onClick={() => deletarTipo(tipo.id)}
-                    className="btn-icon delete"
-                    title="Excluir"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
+                {(canEdit || canDelete) && (
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {canEdit && (
+                      <button onClick={() => editarTipo(tipo)} className="btn-icon" title="Editar">
+                        <Pencil size={18} />
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button 
+                        onClick={() => deletarTipo(tipo.id)}
+                        className="btn-icon delete"
+                        title="Excluir"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

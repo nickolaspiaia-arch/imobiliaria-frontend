@@ -12,6 +12,11 @@ function PaginaBairros() {
   const [loading, setLoading] = useState(true);
   const { toasts, showToast, removeToast } = useToast();
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const canEdit = user.role === 'admin' || user.role === 'corretor';
+  const canDelete = user.role === 'admin';
+  const canCreate = user.role === 'admin' || user.role === 'corretor';
+
   useEffect(() => {
     carregarBairros();
   }, []);
@@ -86,7 +91,7 @@ function PaginaBairros() {
       <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Bairros</h1>
-        {modo === 'lista' && (
+        {modo === 'lista' && canCreate && (
           <button 
             onClick={() => setModo('formulario')}
             className="btn btn-primary"
@@ -112,14 +117,20 @@ function PaginaBairros() {
             <div key={bairro.id} className="card" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary)' }}>{bairro.nome}</h3>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button onClick={() => editarBairro(bairro)} className="btn-icon" title="Editar">
-                    <Pencil size={18} />
-                  </button>
-                  <button onClick={() => deletarBairro(bairro.id)} className="btn-icon delete" title="Excluir">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
+                {(canEdit || canDelete) && (
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {canEdit && (
+                      <button onClick={() => editarBairro(bairro)} className="btn-icon" title="Editar">
+                        <Pencil size={18} />
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button onClick={() => deletarBairro(bairro.id)} className="btn-icon delete" title="Excluir">
+                        <Trash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{bairro.cidade} - {bairro.estado}</p>
             </div>
